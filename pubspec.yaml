@@ -1,0 +1,57 @@
+name: fact_flow
+description: "A new Flutter project."
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.9.0
+
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+
+  cupertino_icons: ^1.0.8
+  get:
+  shared_preferences:
+  flutter_screenutil: ^5.9.0
+  flutter_svg:
+  flutter_spinkit:
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+
+  flutter_lints: ^6.0.0
+
+
+flutter:
+
+
+  uses-material-design: true
+
+
+  assets:
+     - assets/icons/
+     - assets/language/
+     - assets/image/
+
+
+
+
+  fonts:
+     - family: Inter
+       fonts:
+         - asset: assets/fonts/Inter_18pt-Bold.ttf
+         - asset: assets/fonts/Inter_18pt-ExtraBold.ttf
+         - asset: assets/fonts/Inter_18pt-Medium.ttf
+         - asset: assets/fonts/Inter_18pt-Regular.ttf
+         - asset: assets/fonts/Inter_18pt-SemiBold.ttf
+
+
+

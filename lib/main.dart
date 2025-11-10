@@ -2,6 +2,7 @@ import 'package:fact_flow/themes/light_theme.dart';
 import 'package:fact_flow/utils/app_constants.dart';
 import 'package:fact_flow/utils/message.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'controllers/localization_controller.dart';
@@ -11,13 +12,19 @@ import 'helpers/route.dart';
 void main()async {
   WidgetsFlutterBinding.ensureInitialized();
   Map<String, Map<String, String>> _languages = await di.init();
+
+ SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Color(0xFFE8F2F3), 
+      statusBarIconBrightness: Brightness.light, 
+    ));
+
   runApp( MyApp(languages:_languages,));
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key, required this.languages});
   final Map<String, Map<String, String>> languages;
-  // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
     return  GetBuilder<ThemeController>(builder: (themeController) {

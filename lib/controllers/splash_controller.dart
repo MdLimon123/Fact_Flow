@@ -4,7 +4,4 @@ class SplashController extends GetxController{
 
 
 
-
-
-
 }

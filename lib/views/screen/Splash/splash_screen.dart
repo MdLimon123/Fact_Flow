@@ -1,5 +1,8 @@
+import 'package:fact_flow/helpers/route.dart';
 import 'package:fact_flow/utils/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -9,6 +12,15 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    Future.delayed(Duration(seconds: 5), () {
+      Get.offNamed(AppRoutes.onboardScreen);
+    });
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,8 +36,6 @@ class _SplashScreenState extends State<SplashScreen> {
               height: 150,
             ),
           ),
-
- 
 
           Text(
             "Verify, Truth, Instantly",

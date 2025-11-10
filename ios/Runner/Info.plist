@@ -35,6 +35,14 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
+
+
+    <key>NSCameraUsageDescription</key>
+	<string>We needs access to the camera to take photos .</string>
+
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>We needs access to the photo library to select photos.</string>
+
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>

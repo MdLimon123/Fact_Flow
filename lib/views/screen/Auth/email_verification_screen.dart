@@ -1,18 +1,22 @@
 import 'package:fact_flow/utils/app_colors.dart';
 import 'package:fact_flow/views/base/custom_button.dart';
+import 'package:fact_flow/views/screen/subscription/subscription_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:pinput/pinput.dart';
 
 class EmailVerificationScreen extends StatefulWidget {
   const EmailVerificationScreen({super.key});
 
   @override
-  State<EmailVerificationScreen> createState() => _EmailVerificationScreenState();
+  State<EmailVerificationScreen> createState() =>
+      _EmailVerificationScreenState();
 }
 
 class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   @override
-   Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
     final defaultPinTheme = PinTheme(
       width: 50,
       height: 50,
@@ -112,7 +116,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
               SizedBox(height: 100),
               CustomButton(
                 onTap: () {
-              
+                  Get.to(() => SubscriptionScreen());
                 },
                 text: "Verify Code",
               ),
@@ -122,5 +126,4 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
       ),
     );
   }
-
 }

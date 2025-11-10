@@ -22,6 +22,8 @@ dependencies:
   flutter_svg:
   flutter_spinkit:
   pinput: ^5.0.2
+  file_picker: 
+  image_picker: 
 
 dev_dependencies:
   flutter_test:

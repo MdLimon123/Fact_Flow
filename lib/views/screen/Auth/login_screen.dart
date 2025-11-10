@@ -2,6 +2,7 @@ import 'package:fact_flow/helpers/route.dart';
 import 'package:fact_flow/utils/app_colors.dart';
 import 'package:fact_flow/views/base/custom_button.dart';
 import 'package:fact_flow/views/base/custom_text_field.dart';
+import 'package:fact_flow/views/screen/Home/home_screen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -94,7 +95,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               SizedBox(height: 50),
-              CustomButton(onTap: () {}, text: "Log In"),
+              CustomButton(
+                onTap: () {
+                  Get.to(() => HomeScreen());
+                },
+                text: "Log In",
+              ),
               SizedBox(height: 16),
               Center(
                 child: RichText(

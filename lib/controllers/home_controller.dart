@@ -1,22 +1,40 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:io';
+
+import 'package:fact_flow/utils/images_utils.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:get/get.dart';
 
-class HomeController extends GetxController  implements GetxService{
+class HomeController extends GetxController{
 
-  String title="Home Screen";
+  RxString pdfName = ''.obs;
+    Rx<File?> pickImage = Rx<File?>(null);
 
-  @override
-  void onInit() {
+  Future<void> pickPdf() async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf'],
+      );
 
-    debugPrint("On Init  $title");
-
-    super.onInit();
+      if (result != null && result.files.isNotEmpty) {
+        pdfName.value = result.files.single.name;
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to pick PDF file: $e');
+    }
   }
 
-  @override
-  void onReady() {
-    // TODO: implement onReady
-    debugPrint("On onReady  $title");
-    super.onReady();
+  void clearPdf() {
+    pdfName.value = '';
   }
+
+    Future<void> pickImageGellary({bool fromCamera = false})async{
+
+    final pickedFile = await ImageUtils.pickAndCropImage(fromCamera: fromCamera);
+    if(pickedFile != null){
+      pickImage.value = pickedFile;
+    }
+
+  }
+
 }

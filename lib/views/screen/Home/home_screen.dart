@@ -1,6 +1,9 @@
 import 'package:fact_flow/controllers/home_controller.dart';
 import 'package:fact_flow/utils/app_colors.dart';
 import 'package:fact_flow/views/base/custom_button.dart';
+import 'package:fact_flow/views/screen/History/history_screen.dart';
+import 'package:fact_flow/views/screen/Home/AllSubScreen/processing_screen.dart';
+import 'package:fact_flow/views/screen/Profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -240,45 +243,55 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   Spacer(),
 
-                  Container(
-                    height: 36,
-                    width: 36,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: AppColors.backgroundColor,
-                      border: Border.all(color: Color(0xFFE6EBF0)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Color(0xFF000000).withValues(alpha: 0.10),
-                          blurRadius: 4,
-                          offset: Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: SvgPicture.asset('assets/icons/user.svg'),
+                  InkWell(
+                    onTap: () {
+                      Get.to(() => ProfileScreen());
+                    },
+                    child: Container(
+                      height: 36,
+                      width: 36,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: AppColors.backgroundColor,
+                        border: Border.all(color: Color(0xFFE6EBF0)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Color(0xFF000000).withValues(alpha: 0.10),
+                            blurRadius: 4,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: SvgPicture.asset('assets/icons/user.svg'),
+                      ),
                     ),
                   ),
                   SizedBox(width: 12),
-                  Container(
-                    height: 36,
-                    width: 36,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: AppColors.backgroundColor,
-                      border: Border.all(color: Color(0xFFE6EBF0)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Color(0xFF000000).withValues(alpha: 0.10),
-                          blurRadius: 4,
-                          offset: Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: SvgPicture.asset('assets/icons/clock.svg'),
+                  InkWell(
+                    onTap: () {
+                      Get.to(() => HistoryScreen());
+                    },
+                    child: Container(
+                      height: 36,
+                      width: 36,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: AppColors.backgroundColor,
+                        border: Border.all(color: Color(0xFFE6EBF0)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Color(0xFF000000).withValues(alpha: 0.10),
+                            blurRadius: 4,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: SvgPicture.asset('assets/icons/clock.svg'),
+                      ),
                     ),
                   ),
                 ],
@@ -346,7 +359,12 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
               SizedBox(height: 100),
 
-              CustomButton(onTap: () {}, text: "Analysis"),
+              CustomButton(
+                onTap: () {
+                  Get.to(() => ProcessingScreen());
+                },
+                text: "Analysis",
+              ),
             ],
           ),
         ),

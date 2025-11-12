@@ -269,6 +269,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   SizedBox(width: 12),
+
                   InkWell(
                     onTap: () {
                       Get.to(() => HistoryScreen());
@@ -294,6 +295,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
+                
                 ],
               ),
               SizedBox(height: 24),

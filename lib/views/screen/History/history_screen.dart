@@ -4,7 +4,6 @@ import 'package:fact_flow/views/screen/History/TabWidgets/tabs_widget_screen.dar
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:get/get_core/get_core.dart';
 
 class HistoryScreen extends StatefulWidget {

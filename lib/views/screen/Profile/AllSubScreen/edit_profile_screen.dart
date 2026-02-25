@@ -1,9 +1,12 @@
+import 'package:fact_flow/controllers/profile_controller.dart';
+import 'package:fact_flow/services/api_constant.dart';
 import 'package:fact_flow/utils/app_colors.dart';
 import 'package:fact_flow/views/base/custom_button.dart';
+import 'package:fact_flow/views/base/custom_network_image.dart';
 import 'package:fact_flow/views/base/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:get/route_manager.dart';
+import 'package:get/get.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -13,8 +16,22 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
+  final _profileController = Get.put(ProfileController());
+
+  final nameController = TextEditingController();
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _profileController.fetchUserInfo();
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    nameController.text = _profileController.userInfo.value.name ?? "";
+
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       body: SafeArea(
@@ -28,13 +45,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 children: [
                   InkWell(
                     onTap: () {
-                      Get.back();
+                      Navigator.pop(context);
                     },
                     child: Icon(Icons.arrow_back, color: Color(0xFF0D1C12)),
                   ),
                   SizedBox(width: 12),
                   Text(
-                    "Edit Prifle",
+                    "Edit Profile",
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w500,
@@ -51,18 +68,48 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     Stack(
                       alignment: Alignment.center,
                       children: [
-                        Container(
-                          height: 160,
-                          width: 160,
-                          decoration: BoxDecoration(shape: BoxShape.circle),
-                          child: Image.asset(
-                            'assets/image/dummy.png',
-                            fit: BoxFit.cover,
-                          ),
+                        Obx(
+                          () =>
+                              _profileController.userProfileImage.value != null
+                              ? Container(
+                                  height: 160,
+                                  width: 160,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: AppColors.borderColor,
+                                    ),
+                                    shape: BoxShape.circle,
+                                    image: DecorationImage(
+                                      image: FileImage(
+                                        _profileController
+                                            .userProfileImage
+                                            .value!,
+                                      ),
+
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                )
+                              : CustomNetworkImage(
+                                  imageUrl:
+                                      "${ApiConstant.baseUrl}${_profileController.userInfo.value.avatar}",
+                                  height: 160,
+                                  boxShape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: AppColors.borderColor,
+                                  ),
+                                  width: 160,
+                                ),
                         ),
+
                         Positioned(
-                          child: SvgPicture.asset(
-                            'assets/icons/image_fram.svg',
+                          child: InkWell(
+                            onTap: () {
+                              _profileController.pickUserProfileImage();
+                            },
+                            child: SvgPicture.asset(
+                              'assets/icons/image_fram.svg',
+                            ),
                           ),
                         ),
                       ],
@@ -70,7 +117,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     SizedBox(height: 40),
                     CustomTextField(
                       isEmail: true,
-                      hintText: "Mark Wood",
+                      controller: nameController,
                       prefixIcon: Container(
                         height: 24,
                         margin: EdgeInsets.symmetric(horizontal: 10),
@@ -86,7 +133,30 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                     ),
                     SizedBox(height: 80),
-                    CustomButton(onTap: () {}, text: "Save"),
+                    Obx(
+                      () => CustomButton(
+                        loading: _profileController.uploadProfileLoading.value,
+                        onTap: () {
+                          if (nameController.text.isEmpty) {
+                            nameController.text =
+                                _profileController.userInfo.value.name ?? "";
+                          }
+
+                          _profileController.updateProfile(
+                            imagePath:
+                                _profileController.userProfileImage.value !=
+                                    null
+                                ? _profileController
+                                      .userProfileImage
+                                      .value!
+                                      .path
+                                : "",
+                            name: nameController.text.trim(),
+                          );
+                        },
+                        text: "Save",
+                      ),
+                    ),
                   ],
                 ),
               ),

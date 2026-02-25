@@ -1,10 +1,12 @@
 import 'package:fact_flow/controllers/history_controller.dart';
 import 'package:fact_flow/utils/app_colors.dart';
+import 'package:fact_flow/views/base/custom_loading.dart';
+import 'package:fact_flow/views/base/formate_date.dart';
 import 'package:fact_flow/views/screen/History/TabWidgets/tabs_widget_screen.dart';
+import 'package:fact_flow/views/screen/Profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/get_core.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -17,6 +19,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
   final _historyController = Get.put(HistoryController());
 
   @override
+  void initState() {
+    _historyController.fetchTrueList();
+    _historyController.fetchFalseList();
+    _historyController.fetchMixList();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
@@ -25,12 +35,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 26),
           child: Column(
             children: [
-              
               Row(
                 children: [
                   InkWell(
                     onTap: () {
-                      Get.back();
+                      Navigator.pop(context);
                     },
                     child: Icon(Icons.arrow_back, color: Color(0xFF0D1C12)),
                   ),
@@ -47,7 +56,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   buildCircleIcon('assets/icons/user.svg'),
                 ],
               ),
-            
+
               SizedBox(height: 20),
               SizedBox(
                 height: 36,
@@ -82,8 +91,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       return buildFalseList();
                     case 2:
                       return buildMixList();
-                    case 3:
-                      return buildCalendarList();
+                    // case 3:
+                    //   return buildCalendarList();
                     default:
                       return const SizedBox.shrink();
                   }
@@ -97,236 +106,273 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   Widget buildTrueList() {
-    return ListView.separated(
-      physics: AlwaysScrollableScrollPhysics(),
-      shrinkWrap: true,
-      itemBuilder: (context, index) {
-        return Container(
-          width: double.infinity,
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-          decoration: BoxDecoration(
-            color: Color(0xFFFFFFFF),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: Color(0xFFE6EBF0).withValues(alpha: 0.50),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.02),
-                blurRadius: 2,
-                offset: Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    height: 30,
-                    width: 62,
-                    decoration: BoxDecoration(
-                      color: Color(0xFFD3F4DE).withValues(alpha: 0.50),
-
-                      borderRadius: BorderRadius.circular(12),
+    return Obx(
+      () => _historyController.isLoading.value
+          ? Center(child: CustomLoading())
+          : ListView.separated(
+              physics: AlwaysScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                final data = _historyController.trueList[index];
+                return Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                  decoration: BoxDecoration(
+                    color: Color(0xFFFFFFFF),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: Color(0xFFE6EBF0).withValues(alpha: 0.50),
                     ),
-                    child: Center(
-                      child: Text(
-                        "True",
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.02),
+                        blurRadius: 2,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            height: 30,
+                            padding: EdgeInsets.symmetric(horizontal: 10),
+                            decoration: BoxDecoration(
+                              color: Color(0xFFD3F4DE).withValues(alpha: 0.50),
+
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Center(
+                              child: Text(
+                                data.verdict,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                  color: Color(0xFF1AA146),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Text(
+                            formatDate(data.timestamp),
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              color: AppColors.subTextColor,
+                            ),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              _historyController.deleteItem(uuid: data.uid);
+                            },
+                            child: SvgPicture.asset('assets/icons/delete.svg'),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 12),
+                      Text(
+                        data.claim,
+
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 16,
                           fontWeight: FontWeight.w400,
-                          color: Color(0xFF1AA146),
+                          color: AppColors.subTextColor,
                         ),
                       ),
-                    ),
+                    ],
                   ),
-                  Text(
-                    "Checked: Nov 15, 2025",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: AppColors.subTextColor,
-                    ),
-                  ),
-                  SvgPicture.asset('assets/icons/delete.svg'),
-                ],
-              ),
-              SizedBox(height: 12),
-              Text(
-                "Calim: FactFlow’s AI automatically scans articles, extracts factual claims and cross-references them with reliable sources.",
-
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                  color: AppColors.subTextColor,
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-      separatorBuilder: (_, _) => SizedBox(height: 12),
-      itemCount: 10,
+                );
+              },
+              separatorBuilder: (_, _) => SizedBox(height: 12),
+              itemCount: _historyController.trueList.length,
+            ),
     );
   }
 
-  /// 🔴 False Tab List
+  ///  False Tab List
   Widget buildFalseList() {
-    return ListView.separated(
-      physics: AlwaysScrollableScrollPhysics(),
-      shrinkWrap: true,
-      itemBuilder: (context, index) {
-        return Container(
-          width: double.infinity,
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-          decoration: BoxDecoration(
-            color: Color(0xFFFFFFFF),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: Color(0xFFE6EBF0).withValues(alpha: 0.50),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.02),
-                blurRadius: 2,
-                offset: Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    height: 30,
-                    width: 62,
-                    decoration: BoxDecoration(
-                      color: Color(0xFFF8C1C1).withValues(alpha: 0.50),
-
-                      borderRadius: BorderRadius.circular(12),
+    return Obx(
+      () => _historyController.isLoading.value
+          ? Center(child: CustomLoading())
+          : ListView.separated(
+              physics: AlwaysScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                final data = _historyController.falseList[index];
+                return Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                  decoration: BoxDecoration(
+                    color: Color(0xFFFFFFFF),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: Color(0xFFE6EBF0).withValues(alpha: 0.50),
                     ),
-                    child: Center(
-                      child: Text(
-                        "False",
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.02),
+                        blurRadius: 2,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            height: 30,
+                            padding: EdgeInsets.symmetric(horizontal: 10),
+                            decoration: BoxDecoration(
+                              color: Color(0xFFF8C1C1).withValues(alpha: 0.50),
+
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Center(
+                              child: Text(
+                                data.verdict,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                  color: Color(0xFFC93C2A),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Text(
+                            formatDate(data.timestamp),
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              color: AppColors.subTextColor,
+                            ),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              _historyController.deleteItem(uuid: data.uid);
+                            },
+                            child: SvgPicture.asset('assets/icons/delete.svg'),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 12),
+                      Text(
+                        data.claim,
+
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 16,
                           fontWeight: FontWeight.w400,
-                          color: Color(0xFFC93C2A),
+                          color: AppColors.subTextColor,
                         ),
                       ),
-                    ),
+                    ],
                   ),
-                  Text(
-                    "Checked: Nov 15, 2025",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: AppColors.subTextColor,
-                    ),
-                  ),
-                  SvgPicture.asset('assets/icons/delete.svg'),
-                ],
-              ),
-              SizedBox(height: 12),
-              Text(
-                "Calim: FactFlow’s AI automatically scans articles, extracts factual claims and cross-references them with reliable sources.",
-
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                  color: AppColors.subTextColor,
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-      separatorBuilder: (_, _) => SizedBox(height: 12),
-      itemCount: 10,
+                );
+              },
+              separatorBuilder: (_, _) => SizedBox(height: 12),
+              itemCount: _historyController.falseList.length,
+            ),
     );
   }
 
-  /// 🟡 Mix Tab List
+  ///  Mix Tab List
   Widget buildMixList() {
-    return ListView.separated(
-      physics: AlwaysScrollableScrollPhysics(),
-      shrinkWrap: true,
-      itemBuilder: (context, index) {
-        return Container(
-          width: double.infinity,
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-          decoration: BoxDecoration(
-            color: Color(0xFFFFFFFF),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: Color(0xFFE6EBF0).withValues(alpha: 0.50),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.02),
-                blurRadius: 2,
-                offset: Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    height: 30,
-                    width: 62,
-                    decoration: BoxDecoration(
-                      color: Color(0xFFD3F4DE).withValues(alpha: 0.50),
-
-                      borderRadius: BorderRadius.circular(12),
+    return Obx(
+      () => _historyController.isLoading.value
+          ? Center(child: CustomLoading())
+          : ListView.separated(
+              physics: AlwaysScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                final data = _historyController.mixList[index];
+                return Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                  decoration: BoxDecoration(
+                    color: Color(0xFFFFFFFF),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: Color(0xFFE6EBF0).withValues(alpha: 0.50),
                     ),
-                    child: Center(
-                      child: Text(
-                        "True",
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.02),
+                        blurRadius: 2,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            height: 30,
+                            padding: EdgeInsets.symmetric(horizontal: 10),
+                            decoration: BoxDecoration(
+                              color: Color(0xFFD3F4DE).withValues(alpha: 0.50),
+
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Center(
+                              child: Text(
+                                data.verdict,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                  color: Color(0xFF1AA146),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Text(
+                            formatDate(data.timestamp),
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              color: AppColors.subTextColor,
+                            ),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              _historyController.deleteItem(uuid: data.uid);
+                            },
+                            child: SvgPicture.asset('assets/icons/delete.svg'),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 12),
+                      Text(
+                        data.claim,
+
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 16,
                           fontWeight: FontWeight.w400,
-                          color: Color(0xFF1AA146),
+                          color: AppColors.subTextColor,
                         ),
                       ),
-                    ),
+                    ],
                   ),
-                  Text(
-                    "Checked: Nov 15, 2025",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: AppColors.subTextColor,
-                    ),
-                  ),
-                  SvgPicture.asset('assets/icons/delete.svg'),
-                ],
-              ),
-              SizedBox(height: 12),
-              Text(
-                "Calim: FactFlow’s AI automatically scans articles, extracts factual claims and cross-references them with reliable sources.",
-
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                  color: AppColors.subTextColor,
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-      separatorBuilder: (_, _) => SizedBox(height: 12),
-      itemCount: 10,
+                );
+              },
+              separatorBuilder: (_, _) => SizedBox(height: 12),
+              itemCount: _historyController.mixList.length,
+            ),
     );
   }
 
-  /// 🔵 Calendar Tab List
+  ///  Calendar Tab List
   Widget buildCalendarList() {
     return ListView.separated(
       physics: AlwaysScrollableScrollPhysics(),
@@ -404,24 +450,29 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   Widget buildCircleIcon(String asset) {
-    return Container(
-      height: 36,
-      width: 36,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: AppColors.backgroundColor,
-        border: Border.all(color: Color(0xFFE6EBF0)),
-        boxShadow: [
-          BoxShadow(
-            color: Color(0xFF000000).withValues(alpha: .1),
-            blurRadius: 4,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: SvgPicture.asset(asset),
+    return InkWell(
+      onTap: () {
+        Get.to(() => ProfileScreen());
+      },
+      child: Container(
+        height: 36,
+        width: 36,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: AppColors.backgroundColor,
+          border: Border.all(color: Color(0xFFE6EBF0)),
+          boxShadow: [
+            BoxShadow(
+              color: Color(0xFF000000).withValues(alpha: .1),
+              blurRadius: 4,
+              offset: Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: SvgPicture.asset(asset),
+        ),
       ),
     );
   }

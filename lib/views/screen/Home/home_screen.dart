@@ -1,8 +1,8 @@
+import 'package:fact_flow/controllers/data_controller.dart';
 import 'package:fact_flow/controllers/home_controller.dart';
 import 'package:fact_flow/utils/app_colors.dart';
 import 'package:fact_flow/views/base/custom_button.dart';
 import 'package:fact_flow/views/screen/History/history_screen.dart';
-import 'package:fact_flow/views/screen/Home/AllSubScreen/processing_screen.dart';
 import 'package:fact_flow/views/screen/Profile/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -18,19 +18,31 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final _homeController = Get.put(HomeController());
 
+  final textController = TextEditingController();
+
+  final _dataController = Get.put(DataController());
+
   String activeSection = '';
+
+  @override
+  initState() {
+    _dataController.loadUserData();
+
+    super.initState();
+  }
 
   Widget buildCard({
     required String title,
     required String icon,
     required VoidCallback onTap,
     bool isActive = false,
+    double width = 180,
   }) {
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        width: 180,
+        width: width,
         height: 130,
         decoration: BoxDecoration(
           color: isActive ? Color(0xFFE6F6F8) : Colors.white,
@@ -96,6 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       child: TextField(
+        controller: textController,
         maxLines: 4,
         decoration: InputDecoration(
           border: InputBorder.none,
@@ -169,27 +182,17 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget buildImageCard() {
-    return InkWell(
-      onTap: _homeController.pickImageGellary,
-      child: Obx(
-        () => Container(
-          width: double.infinity,
+    return Obx(
+      () => InkWell(
+        onTap: () => _homeController.pickImageGellary(),
+        child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: Color(0xFFB0E3EA)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: .04),
-                blurRadius: 4,
-                offset: const Offset(0, 4),
-              ),
-            ],
           ),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
                 height: 80,
@@ -198,22 +201,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   borderRadius: BorderRadius.circular(12),
                   color: const Color(0xFFE6F6F8),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: _homeController.pickImage.value == null
-                      ? SvgPicture.asset("assets/icons/upload.svg")
-                      : Image.file(_homeController.pickImage.value!),
-                ),
+                child: _homeController.pickImage.value == null
+                    ? Icon(Icons.image, size: 36)
+                    : Image.file(_homeController.pickImage.value!),
               ),
-
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Text(
-                "Tap to select file",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: AppColors.subTextColor,
-                ),
+                _homeController.pickImage.value == null
+                    ? "Tap to select file"
+                    : "Selected: ${_homeController.pickImage.value!.path.split('/').last}",
               ),
             ],
           ),
@@ -295,41 +291,50 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
-                
                 ],
               ),
               SizedBox(height: 24),
-              Wrap(
-                spacing: 5,
-                runSpacing: 10,
-                children: [
-                  buildCard(
-                    title: "Paste Text",
-                    icon: "assets/icons/doc.svg",
-                    onTap: () => setState(() => activeSection = 'text'),
-                    isActive: activeSection == 'text',
-                  ),
-                  buildCard(
-                    title: "Enter URL",
-                    icon: "assets/icons/file.svg",
-                    onTap: () => setState(() => activeSection = 'url'),
-                    isActive: activeSection == 'url',
-                  ),
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  double cardWidth = (constraints.maxWidth - 15) / 2;
+                  return Wrap(
+                    spacing: 5,
+                    runSpacing: 10,
+                    children: [
+                      buildCard(
+                        title: "Paste Text",
+                        icon: "assets/icons/doc.svg",
+                        onTap: () => setState(() => activeSection = 'text'),
+                        isActive: activeSection == 'text',
+                        width: cardWidth,
+                      ),
+                      buildCard(
+                        title: "Enter URL",
+                        icon: "assets/icons/file.svg",
+                        onTap: () => setState(() => activeSection = 'url'),
+                        isActive: activeSection == 'url',
+                        width: cardWidth,
+                      ),
 
-                  buildCard(
-                    title: "Upload Image",
-                    icon: "assets/icons/image.svg",
-                    onTap: () => setState(() => activeSection = 'image'),
-                    isActive: activeSection == 'image',
-                  ),
-                  buildCard(
-                    title: "Upload PDF",
-                    icon: "assets/icons/pdf.svg",
-                    onTap: () => setState(() => activeSection = 'pdf'),
-                    isActive: activeSection == 'pdf',
-                  ),
-                ],
+                      buildCard(
+                        title: "Upload Image",
+                        icon: "assets/icons/image.svg",
+                        onTap: () => setState(() => activeSection = 'image'),
+                        isActive: activeSection == 'image',
+                        width: cardWidth,
+                      ),
+                      buildCard(
+                        title: "Upload PDF",
+                        icon: "assets/icons/pdf.svg",
+                        onTap: () => setState(() => activeSection = 'pdf'),
+                        isActive: activeSection == 'pdf',
+                        width: cardWidth,
+                      ),
+                    ],
+                  );
+                },
               ),
+
               const SizedBox(height: 30),
 
               // --- Selected Section Title ---
@@ -349,7 +354,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               SizedBox(height: 12),
-              // Show based on selected option
+
               if (activeSection == 'text') ...[
                 buildTextField(hint: "Paste text here..."),
               ] else if (activeSection == 'url') ...[
@@ -363,8 +368,30 @@ class _HomeScreenState extends State<HomeScreen> {
 
               CustomButton(
                 onTap: () {
-                  Get.to(() => ProcessingScreen());
+                  if (activeSection == 'text') {
+                    _homeController.submitText(text: textController.text);
+                  } else if (activeSection == 'url') {
+                    _homeController.submitUrl(url: textController.text);
+                  } else if (activeSection == 'image') {
+                    if (_homeController.pickImage.value != null) {
+                      debugPrint(
+                        "Please select an image==========> ${_homeController.pickImage.value!.path}",
+                      );
+                      _homeController.uploadImage();
+                    } else {
+                      Get.snackbar("Error", "Please select an image first");
+                    }
+                  } else if (activeSection == 'pdf') {
+                    if (_homeController.pdfPath.value.isNotEmpty) {
+                      _homeController.uploadPdf(
+                        pdf: _homeController.pdfPath.value,
+                      );
+                    } else {
+                      Get.snackbar("Error", "Please select a PDF file first");
+                    }
+                  }
                 },
+
                 text: "Analysis",
               ),
             ],

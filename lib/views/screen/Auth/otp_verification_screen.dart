@@ -1,18 +1,27 @@
+import 'package:fact_flow/controllers/auth_controller.dart';
 import 'package:fact_flow/utils/app_colors.dart';
 import 'package:fact_flow/views/base/custom_button.dart';
-import 'package:fact_flow/views/screen/Auth/reset_password_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pinput/pinput.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
-  const OtpVerificationScreen({super.key});
+  final String email;
+  const OtpVerificationScreen({super.key, required this.email});
 
   @override
   State<OtpVerificationScreen> createState() => _OtpVerificationScreenState();
 }
 
 class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
+  final _authController = Get.put(AuthController());
+
+  @override
+  void initState() {
+    _authController.startTimerInForget();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final defaultPinTheme = PinTheme(
@@ -84,39 +93,62 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                   ),
                 ),
                 onCompleted: (pin) {
-                  print('Entered OTP: $pin');
+                  _authController.isForgetOtp.value = pin;
                 },
               ),
 
               SizedBox(height: 20),
+
               Center(
-                child: Text.rich(
-                  TextSpan(
-                    text: 'Resend code after ',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: AppColors.textColor,
-                      fontWeight: FontWeight.w400,
-                    ),
-                    children: [
-                      TextSpan(
-                        text: '60s',
-                        style: TextStyle(
-                          color: Color(0xFF00A4BB),
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                child: Obx(() {
+                  return _authController.showForgetButton.value
+                      ? TextButton(
+                          onPressed: () {
+                            _authController.resendCodeInForget(
+                              email: widget.email,
+                            );
+                          },
+                          child: Text(
+                            "Resend Code",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Color(0xFF00A4BB),
+                            ),
+                          ),
+                        )
+                      : Text.rich(
+                          TextSpan(
+                            text: 'Resend code after ',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: AppColors.textColor,
+                              fontWeight: FontWeight.w400,
+                            ),
+                            children: [
+                              TextSpan(
+                                text:
+                                    '${_authController.secondsRemainigInForget.value}s',
+                                style: TextStyle(
+                                  color: Color(0xFF00A4BB),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                }),
               ),
+
               SizedBox(height: 100),
-              CustomButton(
-                onTap: () {
-                  Get.to(() => ResetPasswordScreen());
-                },
-                text: "Verify Code",
+              Obx(
+                () => CustomButton(
+                  loading: _authController.isVerify.value,
+                  onTap: () {
+                    _authController.otpForgetVerify(email: widget.email);
+                  },
+                  text: "Verify Code",
+                ),
               ),
             ],
           ),
@@ -124,5 +156,4 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
       ),
     );
   }
-
 }

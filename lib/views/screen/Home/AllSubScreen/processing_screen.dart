@@ -1,5 +1,4 @@
 import 'package:fact_flow/utils/app_colors.dart';
-import 'package:fact_flow/views/screen/Home/AllSubScreen/ai_result_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -15,7 +14,6 @@ class _ProcessingScreenState extends State<ProcessingScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
 
-
   @override
   void initState() {
     super.initState();
@@ -23,10 +21,6 @@ class _ProcessingScreenState extends State<ProcessingScreen>
       vsync: this,
       duration: const Duration(seconds: 2),
     )..repeat();
-
-    Future.delayed(const Duration(seconds: 5), () {
-      Get.to(() => AiResultScreen());
-    });
   }
 
   @override
@@ -56,8 +50,7 @@ class _ProcessingScreenState extends State<ProcessingScreen>
                   buildCircleIcon('assets/icons/clock.svg'),
                 ],
               ),
-             
-             
+
               SizedBox(height: 200),
               Center(
                 child: RotationTransition(
@@ -71,7 +64,7 @@ class _ProcessingScreenState extends State<ProcessingScreen>
               ),
               SizedBox(height: 43),
               Text(
-                "Please wait while the AI analysis the content",
+                "Please wait while the AI analyzes the content",
 
                 style: TextStyle(
                   fontSize: 24,
@@ -81,9 +74,10 @@ class _ProcessingScreenState extends State<ProcessingScreen>
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 52),
+
               InkWell(
                 onTap: () {
-                  Get.back();
+                  Navigator.pop(context);
                 },
                 child: Container(
                   width: double.infinity,
@@ -133,7 +127,4 @@ class _ProcessingScreenState extends State<ProcessingScreen>
       ),
     );
   }
-
-
-
 }

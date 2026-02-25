@@ -1,7 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
 
+
+<uses-permission android:name="android.permission.INTERNET" /> 
+
+
   <!-- Provide required visibility configuration for API level 30 and above -->
+
 <queries>
   <!-- If your app checks for SMS support -->
   <intent>
@@ -21,7 +26,7 @@
 
 
     <application
-        android:label="fact_flow"
+        android:label="factFlow"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
